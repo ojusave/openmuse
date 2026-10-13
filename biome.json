@@ -10,7 +10,9 @@
       "!**/ios",
       "!**/android",
       "!**/.openmuse",
-      "!**/artifacts"
+      "!**/artifacts",
+      "!**/validation-render",
+      "!**/.loop"
     ]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "lineWidth": 100 },

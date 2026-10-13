@@ -10,7 +10,8 @@ import { ActionService } from "./actions.ts";
 import { agentConfigured, makeRuntime } from "./agent.ts";
 import { createAuth } from "./auth.ts";
 import { BrowserService } from "./browser.ts";
-import { ComputerService, type DockerRunner } from "./computer.ts";
+import type { DockerRunner } from "./computer.ts";
+import { createComputer } from "./computer-provider.ts";
 import { computerRoutes } from "./computer-routes.ts";
 import { assertApiDeploymentConfig, type Config } from "./config.ts";
 import type { Store } from "./db.ts";
@@ -39,7 +40,9 @@ export async function createApp(
     connection: (owner) => workspace.connection(owner),
   });
   const browser = new BrowserService(db, config, auth, files);
-  const computer = new ComputerService(db, config, options.docker);
+  // The API runs on the server. Select one implementation for its authenticated
+  // routes and the agent, so both see the same owner-scoped saved files.
+  const computer = createComputer(db, config, options.docker);
   const agent = new AgentService(db, config, workspace, files, actions, browser, computer);
   const intelligence = new CopilotKitIntelligence({ apiKey: config.intelligenceApiKey });
   const runtime = makeRuntime(config, agent, auth, intelligence);

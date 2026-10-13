@@ -127,8 +127,12 @@ export function LinuxWorkspace({ tab }: { tab: "Terminal" | "Files" }) {
           <View style={{ flex: 1, gap: 4 }}>
             <Text style={s.heading}>Your Linux workspace</Text>
             <Text style={s.muted}>
+              {/* Render starts a fresh computer for each action, so Ready means
+                  the saved workspace can accept work, not that a VM is waiting. */}
               {running
-                ? "Running · files persist when stopped"
+                ? snapshot?.provider === "render"
+                  ? "Ready · saved files persist when stopped"
+                  : "Running · files persist when stopped"
                 : snapshot?.status === "stopped"
                   ? "Stopped · your files are saved"
                   : snapshot?.status === "unconfigured"
@@ -143,9 +147,11 @@ export function LinuxWorkspace({ tab }: { tab: "Terminal" | "Files" }) {
         {!!snapshot?.message && <Text style={s.small}>{snapshot.message}</Text>}
         {snapshot?.enabled && (
           <View style={[s.row, { gap: 8, flexWrap: "wrap" }]}>
-            {running ? (
+            {/* A failed cleanup blocks the next paid sandbox until Stop confirms
+                the old one ended. The same button offers that recovery action. */}
+            {running || (snapshot.provider === "render" && snapshot.status === "error") ? (
               <Button icon={Power} busy={busy} onPress={() => void control("stop")}>
-                Stop computer
+                {snapshot.status === "error" ? "Retry cleanup" : "Stop computer"}
               </Button>
             ) : (
               <Button primary icon={Play} busy={busy} onPress={() => void control("start")}>

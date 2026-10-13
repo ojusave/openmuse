@@ -12,7 +12,9 @@ export interface ComputerCommand {
 }
 export interface ComputerSnapshot {
   enabled: boolean;
-  provider: "docker";
+  // This label tells the app whether Stop leaves a Docker volume or saved
+  // Render workspace files; it is part of the status sent by the API server.
+  provider: "docker" | "render";
   status: "unconfigured" | "stopped" | "running" | "error";
   workspacePath: "/workspace";
   network: "disabled";

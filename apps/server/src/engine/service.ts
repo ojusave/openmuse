@@ -25,7 +25,7 @@ import type {
 } from "../../../../packages/domain/src/index.ts";
 import type { ActionService } from "../actions.ts";
 import type { BrowserService } from "../browser.ts";
-import { ComputerService } from "../computer.ts";
+import { type ComputerProvider, createComputer } from "../computer-provider.ts";
 import type { Config } from "../config.ts";
 import type { Store } from "../db.ts";
 import { AppError } from "../errors.ts";
@@ -50,7 +50,9 @@ export class AgentService {
     readonly files: Files,
     readonly actions: ActionService,
     readonly browser: BrowserService,
-    readonly computer: ComputerService = new ComputerService(db, config),
+    // A task worker may construct the agent by itself. It must select the same
+    // provider as the API server so background tasks use the intended computer.
+    readonly computer: ComputerProvider = createComputer(db, config),
   ) {
     this.worker = new TaskWorker(db, (owner, task, context) => this.execute(owner, task, context), {
       settled: (owner, task) => this.publishOutcome(owner, task),

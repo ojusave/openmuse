@@ -1,14 +1,10 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import {
-  type ComputerService,
-  computerCommandSchema,
-  computerPathSchema,
-  computerWriteSchema,
-} from "./computer.ts";
+import { computerCommandSchema, computerPathSchema, computerWriteSchema } from "./computer.ts";
+import type { ComputerProvider } from "./computer-provider.ts";
 import type { Files } from "./files.ts";
 
-export function computerRoutes(computer: ComputerService, files: Files) {
+export function computerRoutes(computer: ComputerProvider, files: Files) {
   const app = new Hono<{ Variables: { owner: string } }>();
   app.get("/", async (c) => c.json(await computer.snapshot(c.get("owner"))));
   app.post("/start", async (c) => c.json(await computer.start(c.get("owner"))));

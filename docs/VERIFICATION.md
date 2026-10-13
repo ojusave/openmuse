@@ -1,5 +1,17 @@
 # Release verification
 
+## Render computer acceptance, October 13, 2026
+
+OpenMuse's optional Render computer restores each owner's checked files into a fresh paid Standard Sandbox, runs one terminal or file action, saves the resulting /workspace files, and verifies sandbox termination. Docker remains the default provider. The browser worker is separate.
+
+- Local unit and regression suite: 288 tests passed, including provider selection, owner separation, idempotent command receipts, policy refusal, malformed exports, database restart persistence, uncertain deletion recovery, late creation cleanup, and Stop during execution.
+- Server and mobile TypeScript checks, Biome lint, API build and web export passed.
+- Real Render SDK acceptance in the samples workspace: a calculation produced 66 from a protected fixture; a new provider instance restored the exact saved file; nonzero exit, timeout, symlink rejection, prior-workspace retention and owner isolation were checked. Each created sandbox was independently read back as terminated.
+- Real model acceptance used OpenMuse's TanStack agent and normal computer tools with an OpenRouter-hosted model. The model read the synthetic orders file, saved total 66, and the test reopened and read the saved result while confirming the input was unchanged and the sandbox terminated. Tool receipts, rather than the model's prose, supplied the evidence.
+- This section records local acceptance. Production deployment and signed-in browser acceptance are separate checks; see the deployment record below when those are complete.
+
+The example uses only synthetic data. Local detailed results live in ignored validation-render files so provider keys and user data do not enter Git. The [computer guide](COMPUTER.md) explains prerequisites, limits and cleanup.
+
 September 16, 2026 · Capybara and distinct mobile/web demos, following the agent browser release · local fictional workspace. This records exercised behavior and its limits; it does not establish that every planned capability is complete.
 
 ## Automated checks

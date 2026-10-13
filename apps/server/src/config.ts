@@ -50,6 +50,7 @@ export interface Config {
   workerToken?: string;
   taskWorkerEnabled?: boolean;
   computerEnabled?: boolean;
+  computerProvider?: "docker" | "render";
   computerImage?: string;
   computerDeploymentId?: string;
   allowedOrigins: string[];
@@ -109,6 +110,19 @@ export function readConfig(): Config {
   const typesafeApiKey = process.env.TYPESAFE_API_KEY?.trim();
   if (jevMode === "live" && !typesafeApiKey)
     throw new Error("JEV_MODE=live requires a nonblank TYPESAFE_API_KEY");
+  // The API server chooses which computer runs terminal and file work. Docker
+  // stays the default for existing installs; Render needs its own server-side key.
+  const computerProvider = process.env.COMPUTER_PROVIDER ?? "docker";
+  if (computerProvider !== "docker" && computerProvider !== "render")
+    throw new Error("COMPUTER_PROVIDER must be docker or render");
+  // Fail during startup when an enabled Render computer cannot authenticate.
+  // This avoids showing users a Start button that can never create a sandbox.
+  if (
+    computerProvider === "render" &&
+    process.env.COMPUTER_ENABLED === "true" &&
+    (!process.env.RENDER_API_KEY || !process.env.RENDER_WORKSPACE_ID)
+  )
+    throw new Error("Render computer requires RENDER_API_KEY and RENDER_WORKSPACE_ID");
   const port = Number(process.env.PORT ?? 8787);
   const publicUrl = process.env.PUBLIC_API_URL ?? `http://localhost:${port}`;
   const config: Config = {
@@ -135,6 +149,7 @@ export function readConfig(): Config {
     workerToken: process.env.WORKER_TOKEN,
     taskWorkerEnabled: process.env.TASK_WORKER_ENABLED !== "false",
     computerEnabled: process.env.COMPUTER_ENABLED === "true",
+    computerProvider,
     computerImage: process.env.COMPUTER_IMAGE ?? "openmuse-computer:local",
     computerDeploymentId: process.env.COMPUTER_DEPLOYMENT_ID,
     allowedOrigins: (

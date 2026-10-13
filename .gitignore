@@ -11,3 +11,5 @@ apps/mobile/android/
 .DS_Store
 *.tsbuildinfo
 artifacts/
+.loop/
+validation-render/
